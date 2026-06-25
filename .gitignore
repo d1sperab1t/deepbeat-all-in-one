@@ -1,0 +1,4 @@
+city-game/node_modules/
+city-game/db/game.db
+city-game/public/uploads/
+.env

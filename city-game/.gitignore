@@ -1,0 +1,4 @@
+node_modules/
+db/game.db
+public/uploads/
+.env

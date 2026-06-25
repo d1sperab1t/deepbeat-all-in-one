@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>邀请函 — DEEPBEAT</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Anton&family=Space+Grotesk:wght@400;500;600;700&family=Noto+Sans+SC:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --primary: #FF3D14;
+      --gold: #FFD24A;
+      --bg: #0B0A09;
+      --card: #100E0C;
+      --text: #F6F1E9;
+      --text-light: #B8AEA4;
+      --text-muted: #8A8178;
+      --border: rgba(255,255,255,0.08);
+      --font-display: "Anton", "Noto Sans SC", sans-serif;
+      --font-body: "Space Grotesk", "Noto Sans SC", sans-serif;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font-body);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ========== 加载态 ========== */
+    .loading-screen {
+      text-align: center;
+      color: var(--text-muted);
+    }
+    .loading-screen .spinner {
+      width: 24px; height: 24px;
+      border: 2px solid var(--border);
+      border-top-color: var(--primary);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      margin: 0 auto 12px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ========== 错误态 ========== */
+    .error-screen {
+      text-align: center;
+      padding: 60px 20px;
+    }
+    .error-screen h2 {
+      font-family: var(--font-display);
+      font-size: 36px;
+      color: var(--text-muted);
+      margin-bottom: 8px;
+    }
+    .error-screen p { color: var(--text-muted); font-size: 14px; }
+
+    /* ========== 邀请函容器 ========== */
+    .invitation {
+      width: 100%;
+      max-width: 480px;
+      position: relative;
+    }
+
+    /* ========== 模板：经典 ========== */
+    .tpl-classic .inv-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      overflow: hidden;
+      position: relative;
+    }
+    .tpl-classic .inv-glow {
+      position: absolute;
+      top: -40%;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 300px;
+      height: 300px;
+      background: radial-gradient(circle, rgba(255,61,20,0.12) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .tpl-classic .inv-header {
+      padding: 48px 32px 32px;
+      text-align: center;
+      position: relative;
+      border-bottom: 1px solid var(--border);
+    }
+    .tpl-classic .inv-badge {
+      display: inline-block;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--primary);
+      background: rgba(255,61,20,0.1);
+      padding: 6px 16px;
+      border-radius: 999px;
+      margin-bottom: 20px;
+    }
+    .tpl-classic .inv-title {
+      font-family: var(--font-display);
+      font-size: 40px;
+      letter-spacing: 1px;
+      line-height: 1.1;
+      margin-bottom: 8px;
+    }
+    .tpl-classic .inv-subtitle {
+      font-size: 16px;
+      color: var(--text-light);
+      font-weight: 500;
+    }
+    .tpl-classic .inv-body {
+      padding: 32px;
+      position: relative;
+    }
+    .tpl-classic .inv-guest {
+      font-size: 20px;
+      font-weight: 700;
+      margin-bottom: 16px;
+      color: var(--text);
+    }
+    .tpl-classic .inv-text {
+      font-size: 15px;
+      line-height: 1.8;
+      color: var(--text-light);
+      margin-bottom: 24px;
+    }
+    .tpl-classic .inv-details {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      padding: 20px 24px;
+      background: rgba(255,255,255,0.03);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+    }
+    .tpl-classic .inv-detail-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 14px;
+    }
+    .tpl-classic .inv-detail-label {
+      color: var(--text-muted);
+      min-width: 48px;
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+    }
+    .tpl-classic .inv-detail-value {
+      color: var(--text);
+      font-weight: 500;
+    }
+    .tpl-classic .inv-footer {
+      padding: 20px 32px 28px;
+      text-align: center;
+      border-top: 1px solid var(--border);
+    }
+    .tpl-classic .inv-footer-text {
+      font-size: 13px;
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+    .tpl-classic .inv-status {
+      display: inline-block;
+      margin-top: 16px;
+      padding: 8px 20px;
+      border-radius: 10px;
+      font-size: 14px;
+      font-weight: 600;
+    }
+    .inv-status-pending { background: rgba(255,210,74,0.15); color: var(--gold); }
+    .inv-status-confirmed { background: rgba(0,200,83,0.15); color: #00C853; }
+    .inv-status-expired { background: rgba(255,61,20,0.1); color: var(--text-muted); }
+
+    /* ========== 模板：黑金 ========== */
+    .tpl-golden .inv-card {
+      background: linear-gradient(165deg, #1A1714 0%, #0B0A09 100%);
+      border: 1px solid rgba(255,210,74,0.15);
+      border-radius: 18px;
+      overflow: hidden;
+      position: relative;
+    }
+    .tpl-golden .inv-glow {
+      position: absolute;
+      top: -30%;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 400px;
+      height: 400px;
+      background: radial-gradient(circle, rgba(255,210,74,0.08) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .tpl-golden .inv-header {
+      padding: 48px 32px 32px;
+      text-align: center;
+      position: relative;
+      border-bottom: 1px solid rgba(255,210,74,0.1);
+    }
+    .tpl-golden .inv-badge {
+      display: inline-block;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 20px;
+    }
+    .tpl-golden .inv-title {
+      font-family: var(--font-display);
+      font-size: 44px;
+      letter-spacing: 2px;
+      color: var(--gold);
+      line-height: 1.1;
+      margin-bottom: 8px;
+    }
+    .tpl-golden .inv-subtitle {
+      font-size: 16px;
+      color: var(--text-light);
+      font-weight: 500;
+    }
+    .tpl-golden .inv-body {
+      padding: 32px;
+      position: relative;
+    }
+    .tpl-golden .inv-guest {
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--gold);
+      margin-bottom: 16px;
+    }
+    .tpl-golden .inv-text {
+      font-size: 15px;
+      line-height: 1.8;
+      color: var(--text-light);
+      margin-bottom: 24px;
+    }
+    .tpl-golden .inv-details {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      padding: 20px 24px;
+      background: rgba(255,210,74,0.04);
+      border: 1px solid rgba(255,210,74,0.1);
+      border-radius: 12px;
+    }
+    .tpl-golden .inv-detail-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 14px;
+    }
+    .tpl-golden .inv-detail-label {
+      color: var(--gold);
+      min-width: 48px;
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      opacity: 0.7;
+    }
+    .tpl-golden .inv-detail-value { color: var(--text); font-weight: 500; }
+    .tpl-golden .inv-footer {
+      padding: 20px 32px 28px;
+      text-align: center;
+      border-top: 1px solid rgba(255,210,74,0.1);
+    }
+    .tpl-golden .inv-footer-text { font-size: 13px; color: var(--text-muted); }
+
+    /* ========== 模板：极简 ========== */
+    .tpl-minimal .inv-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      overflow: hidden;
+    }
+    .tpl-minimal .inv-glow { display: none; }
+    .tpl-minimal .inv-header {
+      padding: 40px 32px 28px;
+      text-align: left;
+      position: relative;
+    }
+    .tpl-minimal .inv-badge {
+      display: inline-block;
+      font-family: monospace;
+      font-size: 11px;
+      color: var(--text-muted);
+      letter-spacing: 1px;
+      margin-bottom: 16px;
+    }
+    .tpl-minimal .inv-title {
+      font-family: var(--font-display);
+      font-size: 36px;
+      letter-spacing: 0;
+      line-height: 1.15;
+    }
+    .tpl-minimal .inv-subtitle {
+      font-size: 14px;
+      color: var(--text-muted);
+      margin-top: 4px;
+    }
+    .tpl-minimal .inv-body {
+      padding: 0 32px 32px;
+      position: relative;
+    }
+    .tpl-minimal .inv-guest {
+      font-size: 16px;
+      font-weight: 600;
+      margin-bottom: 12px;
+      color: var(--text);
+    }
+    .tpl-minimal .inv-text {
+      font-size: 14px;
+      line-height: 1.7;
+      color: var(--text-light);
+      margin-bottom: 24px;
+    }
+    .tpl-minimal .inv-details {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      padding: 16px 0;
+      border-top: 1px solid var(--border);
+    }
+    .tpl-minimal .inv-detail-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+    }
+    .tpl-minimal .inv-detail-label {
+      color: var(--text-muted);
+      min-width: 40px;
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+    }
+    .tpl-minimal .inv-detail-value { color: var(--text); }
+    .tpl-minimal .inv-footer {
+      padding: 16px 32px 24px;
+      border-top: 1px solid var(--border);
+    }
+    .tpl-minimal .inv-footer-text { font-size: 12px; color: var(--text-dim); }
+
+    /* ========== 响应式 ========== */
+    @media (max-width: 520px) {
+      body { padding: 12px; }
+      .tpl-classic .inv-header, .tpl-golden .inv-header { padding: 36px 20px 24px; }
+      .tpl-classic .inv-body, .tpl-golden .inv-body { padding: 24px 20px; }
+      .tpl-classic .inv-footer, .tpl-golden .inv-footer { padding: 16px 20px 24px; }
+      .tpl-classic .inv-title, .tpl-golden .inv-title { font-size: 32px; }
+      .tpl-minimal .inv-header { padding: 32px 20px 20px; }
+      .tpl-minimal .inv-body { padding: 0 20px 24px; }
+    }
+  </style>
+</head>
+<body>
+
+<div id="invitation-root">
+  <div class="loading-screen">
+    <div class="spinner"></div>
+    <p>加载邀请函...</p>
+  </div>
+</div>
+
+<script>
+(function() {
+  // 从 URL 获取邀请码：/invitation/view/:code
+  const path = window.location.pathname;
+  const match = path.match(/\/invitation\/view\/(.+)$/);
+  if (!match) {
+    showError('无效的邀请函链接');
+    return;
+  }
+  const code = match[1];
+
+  // 加载邀请函数据
+  fetch('/api/player/invitation/' + code + '/public')
+    .then(function(res) { return res.json().then(function(data) { return { ok: res.ok, data: data }; }); })
+    .then(function(result) {
+      if (!result.ok) {
+        showError(result.data.error || '邀请函不存在');
+        return;
+      }
+      renderInvitation(result.data.invitation);
+    })
+    .catch(function() {
+      showError('网络错误，请稍后重试');
+    });
+
+  function showError(msg) {
+    document.getElementById('invitation-root').innerHTML =
+      '<div class="error-screen"><h2>404</h2><p>' + msg + '</p></div>';
+  }
+
+  function escapeHtml(str) {
+    if (!str) return '';
+    return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+
+  function renderInvitation(inv) {
+    var tpl = inv.template || 'classic';
+    var statusClass = 'inv-status-' + (inv.status || 'pending');
+    var statusText = inv.status === 'confirmed' ? '✓ 已确认出席' : inv.status === 'expired' ? '已过期' : '待确认';
+
+    var html = ''
+      + '<div class="invitation tpl-' + tpl + '">'
+      + '  <div class="inv-card">'
+      + '    <div class="inv-glow"></div>'
+      + '    <div class="inv-header">'
+      + '      <div class="inv-badge">INVITATION</div>'
+      + '      <div class="inv-title">' + escapeHtml(inv.title || '诚挚邀请') + '</div>'
+      + '      <div class="inv-subtitle">' + escapeHtml(inv.subtitle || inv.activity_title) + '</div>'
+      + '    </div>'
+      + '    <div class="inv-body">'
+      + '      <div class="inv-guest">' + escapeHtml(inv.guest_name || '尊敬的嘉宾') + '</div>'
+      + '      <div class="inv-text">' + escapeHtml(inv.body || '') + '</div>'
+      + '      <div class="inv-details">'
+      + '        <div class="inv-detail-row"><span class="inv-detail-label">时间</span><span class="inv-detail-value">' + escapeHtml(inv.activity_date) + '</span></div>'
+      + '        <div class="inv-detail-row"><span class="inv-detail-label">地点</span><span class="inv-detail-value">' + escapeHtml(inv.activity_location || '待定') + '</span></div>'
+      + '      </div>'
+      + '    </div>'
+      + '    <div class="inv-footer">'
+      + '      <div class="inv-footer-text">' + escapeHtml(inv.footer || '') + '</div>'
+      + '      <div class="inv-status ' + statusClass + '">' + statusText + '</div>'
+      + '    </div>'
+      + '  </div>'
+      + '</div>';
+
+    document.getElementById('invitation-root').innerHTML = html;
+    document.title = (inv.title || '邀请函') + ' — DEEPBEAT';
+  }
+})();
+</script>
+</body>
+</html>
