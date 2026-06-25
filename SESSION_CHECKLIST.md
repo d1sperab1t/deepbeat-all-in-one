@@ -41,8 +41,8 @@
 ### 必做：Git 保存
 
 ```bash
-cd ~/deepbeat-allinone/city-game
-git add .
+cd ~/deepbeat-allinone
+git add -A
 git commit -m "Day N: [一句话描述今天做了什么]"
 ```
 
