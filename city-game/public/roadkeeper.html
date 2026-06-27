@@ -1,0 +1,1202 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>寻迹莫干山 · 记路家计划</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Noto+Sans+SC:wght@300;400;500;700;900&family=Noto+Serif+SC:wght@400;600;700;900&display=swap" rel="stylesheet">
+<style>
+/* ============ RESET & BASE ============ */
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; font-size: 16px; }
+body {
+  font-family: 'Noto Sans SC', 'Inter', sans-serif;
+  color: #111111;
+  background: #F7F5F0;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+img { display: block; max-width: 100%; }
+a { text-decoration: none; color: inherit; }
+
+/* ============ CSS VARIABLES ============ */
+:root {
+  --orange: #D97B2A;
+  --orange-light: #E8964A;
+  --bg: #F7F5F0;
+  --dark: #0A0A0A;
+  --card: #FFFFFF;
+  --border: #E5E3DE;
+  --text: #111111;
+  --muted: #888888;
+  --serif: 'Noto Serif SC', serif;
+  --sans: 'Noto Sans SC', 'Inter', sans-serif;
+  --inter: 'Inter', sans-serif;
+}
+
+/* ============ SCROLL ANIMATIONS ============ */
+.fade-up {
+  opacity: 0;
+  transform: translateY(40px);
+  transition: opacity 0.8s ease, transform 0.8s ease;
+}
+.fade-up.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+.fade-left {
+  opacity: 0;
+  transform: translateX(-40px);
+  transition: opacity 0.8s ease, transform 0.8s ease;
+}
+.fade-left.visible {
+  opacity: 1;
+  transform: translateX(0);
+}
+.fade-right {
+  opacity: 0;
+  transform: translateX(40px);
+  transition: opacity 0.8s ease, transform 0.8s ease;
+}
+.fade-right.visible {
+  opacity: 1;
+  transform: translateX(0);
+}
+.scale-in {
+  opacity: 0;
+  transform: scale(0.9);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+.scale-in.visible {
+  opacity: 1;
+  transform: scale(1);
+}
+.stagger-1 { transition-delay: 0.1s; }
+.stagger-2 { transition-delay: 0.2s; }
+.stagger-3 { transition-delay: 0.3s; }
+.stagger-4 { transition-delay: 0.4s; }
+.stagger-5 { transition-delay: 0.5s; }
+
+/* ============ HERO SECTION ============ */
+.hero {
+  position: relative;
+  width: 100%;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background: url('/sucai/hero.jpg') center/cover no-repeat;
+  color: #fff;
+  overflow: hidden;
+}
+.hero::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    180deg,
+    rgba(10,10,10,0.55) 0%,
+    rgba(10,10,10,0.35) 40%,
+    rgba(10,10,10,0.6) 100%
+  );
+  z-index: 1;
+}
+.hero > * { position: relative; z-index: 2; }
+
+/* Top Nav */
+.hero-nav {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  padding: 24px 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 3;
+}
+.hero-nav span {
+  font-family: var(--sans);
+  font-size: 13px;
+  font-weight: 400;
+  letter-spacing: 2px;
+  color: rgba(255,255,255,0.7);
+  text-transform: uppercase;
+}
+
+/* Hero Content */
+.hero-content {
+  text-align: center;
+  max-width: 800px;
+  padding: 0 24px;
+}
+.hero-tag {
+  display: inline-block;
+  font-family: var(--sans);
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 3px;
+  color: rgba(255,255,255,0.65);
+  border: 1px solid rgba(255,255,255,0.3);
+  padding: 6px 20px;
+  border-radius: 30px;
+  margin-bottom: 28px;
+}
+.hero-title {
+  font-family: var(--sans);
+  font-size: 56px;
+  font-weight: 900;
+  line-height: 1.2;
+  margin-bottom: 6px;
+}
+.hero-title .orange { color: var(--orange); }
+.hero-subtitle {
+  font-family: var(--sans);
+  font-size: 32px;
+  font-weight: 300;
+  margin-bottom: 32px;
+}
+
+/* Typewriter */
+.typewriter-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-family: var(--sans);
+  font-size: 22px;
+  font-weight: 400;
+  color: rgba(255,255,255,0.8);
+  margin-bottom: 40px;
+  min-height: 36px;
+}
+.typewriter-cursor {
+  display: inline-block;
+  width: 2px;
+  height: 24px;
+  background: var(--orange);
+  animation: blink 0.8s step-end infinite;
+}
+@keyframes blink { 50% { opacity: 0; } }
+.typewriter-text {
+  color: var(--orange);
+  font-weight: 600;
+}
+
+/* Left border slogan */
+.hero-slogan {
+  border-left: 3px solid var(--orange);
+  padding: 16px 24px;
+  text-align: left;
+  font-family: var(--sans);
+  font-size: 16px;
+  line-height: 1.8;
+  color: rgba(255,255,255,0.85);
+  margin: 0 auto 32px;
+  max-width: 400px;
+}
+
+/* Date badge */
+.hero-date {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(217,123,42,0.2);
+  border: 1px solid rgba(217,123,42,0.5);
+  padding: 10px 24px;
+  border-radius: 40px;
+  font-family: var(--inter);
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--orange-light);
+  margin-bottom: 48px;
+  backdrop-filter: blur(4px);
+}
+
+/* Explore button */
+.hero-explore {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--inter);
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.7);
+  cursor: pointer;
+  transition: color 0.3s;
+  animation: float 3s ease-in-out infinite;
+}
+.hero-explore:hover { color: var(--orange); }
+.hero-explore svg {
+  width: 16px;
+  height: 16px;
+  animation: bounce 2s ease-in-out infinite;
+}
+@keyframes float { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
+@keyframes bounce { 0%,100% { transform: translateY(0); } 50% { transform: translateY(4px); } }
+
+/* ============ SECTION COMMON ============ */
+.section { padding: 100px 0; }
+.container { max-width: 1200px; margin: 0 auto; padding: 0 24px; }
+.section-label {
+  font-family: var(--sans);
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 3px;
+  color: var(--muted);
+  text-transform: uppercase;
+  margin-bottom: 16px;
+}
+.section-title {
+  font-family: var(--sans);
+  font-size: 36px;
+  font-weight: 900;
+  line-height: 1.3;
+  margin-bottom: 16px;
+}
+.section-desc {
+  font-family: var(--sans);
+  font-size: 16px;
+  color: var(--muted);
+  line-height: 1.7;
+  max-width: 600px;
+}
+
+/* ============ BENEFITS SECTION ============ */
+.benefits-banner {
+  position: relative;
+  width: 100%;
+  height: 480px;
+  overflow: hidden;
+}
+.benefits-banner img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.benefits-banner::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(10,10,10,0.3) 0%, rgba(10,10,10,0.7) 100%);
+}
+.benefits-banner-content {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  z-index: 2;
+  text-align: center;
+  padding: 0 24px;
+}
+.benefits-banner-title {
+  font-family: var(--sans);
+  font-size: 32px;
+  font-weight: 700;
+  color: #fff;
+  line-height: 1.6;
+  margin-bottom: 16px;
+}
+.benefits-banner-desc {
+  font-family: var(--sans);
+  font-size: 15px;
+  color: rgba(255,255,255,0.7);
+  max-width: 600px;
+  line-height: 1.7;
+}
+
+/* Experience cards */
+.exp-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+  margin: 60px auto;
+  max-width: 900px;
+}
+.exp-card {
+  position: relative;
+  border-radius: 16px;
+  overflow: hidden;
+  aspect-ratio: 16/10;
+  cursor: pointer;
+}
+.exp-card img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.6s ease;
+}
+.exp-card:hover img { transform: scale(1.08); }
+.exp-card::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, transparent 40%, rgba(10,10,10,0.7) 100%);
+}
+.exp-card-label {
+  position: absolute;
+  bottom: 16px;
+  left: 20px;
+  right: 20px;
+  z-index: 2;
+  font-family: var(--sans);
+  font-size: 15px;
+  font-weight: 500;
+  color: #fff;
+  line-height: 1.4;
+}
+
+/* Benefit cards */
+.benefit-section-title {
+  text-align: center;
+  margin: 80px 0 40px;
+}
+.benefit-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+  max-width: 1000px;
+  margin: 0 auto;
+}
+.benefit-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 32px;
+  transition: box-shadow 0.3s ease, transform 0.3s ease;
+}
+.benefit-card:hover {
+  box-shadow: 0 12px 40px rgba(0,0,0,0.08);
+  transform: translateY(-4px);
+}
+.benefit-card-num {
+  font-family: var(--inter);
+  font-size: 42px;
+  font-weight: 800;
+  color: var(--orange);
+  opacity: 0.25;
+  line-height: 1;
+  margin-bottom: 8px;
+}
+.benefit-card-tag {
+  display: inline-block;
+  font-family: var(--sans);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 1px;
+  color: var(--orange);
+  background: rgba(217,123,42,0.1);
+  padding: 4px 10px;
+  border-radius: 4px;
+  margin-bottom: 12px;
+}
+.benefit-card-title {
+  font-family: var(--sans);
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 12px;
+  line-height: 1.4;
+}
+.benefit-card-list {
+  list-style: none;
+}
+.benefit-card-list li {
+  font-family: var(--sans);
+  font-size: 13px;
+  color: var(--muted);
+  line-height: 1.6;
+  padding: 4px 0;
+  padding-left: 16px;
+  position: relative;
+}
+.benefit-card-list li::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 11px;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--border);
+}
+
+/* ============ VALUE TABLE SECTION ============ */
+.value-banner {
+  position: relative;
+  width: 100%;
+  height: 360px;
+  overflow: hidden;
+}
+.value-banner img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.value-banner::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(10,10,10,0.4) 0%, rgba(10,10,10,0.7) 100%);
+}
+.value-banner-content {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  z-index: 2;
+  text-align: center;
+}
+.value-banner-big {
+  font-family: var(--sans);
+  font-size: 52px;
+  font-weight: 900;
+  color: #fff;
+  line-height: 1.2;
+}
+.value-banner-big .orange { color: var(--orange); }
+
+/* Value table + price */
+.value-body {
+  display: grid;
+  grid-template-columns: 1fr 380px;
+  gap: 40px;
+  align-items: start;
+  margin: 60px auto;
+  max-width: 1100px;
+}
+.value-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+.value-table th,
+.value-table td {
+  font-family: var(--sans);
+  font-size: 14px;
+  padding: 14px 16px;
+  text-align: left;
+  border-bottom: 1px solid var(--border);
+}
+.value-table th {
+  font-weight: 600;
+  color: var(--text);
+  background: rgba(217,123,42,0.06);
+}
+.value-table td {
+  color: var(--muted);
+}
+.value-table tr:last-child td { border-bottom: none; }
+.value-table .num-col {
+  font-family: var(--inter);
+  font-weight: 600;
+  color: var(--text);
+}
+
+/* Price card */
+.price-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 40px 32px;
+  text-align: center;
+  position: sticky;
+  top: 40px;
+}
+.price-card-label {
+  font-family: var(--sans);
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--muted);
+  letter-spacing: 2px;
+  margin-bottom: 8px;
+}
+.price-card-price {
+  font-family: var(--inter);
+  font-size: 48px;
+  font-weight: 800;
+  color: var(--orange);
+  margin-bottom: 4px;
+}
+.price-card-original {
+  font-family: var(--inter);
+  font-size: 16px;
+  color: var(--muted);
+  text-decoration: line-through;
+  margin-bottom: 24px;
+}
+.price-card-stats {
+  display: flex;
+  justify-content: center;
+  gap: 24px;
+  padding: 20px 0;
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 28px;
+}
+.price-stat {
+  text-align: center;
+}
+.price-stat-num {
+  font-family: var(--inter);
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--text);
+}
+.price-stat-label {
+  font-family: var(--sans);
+  font-size: 12px;
+  color: var(--muted);
+  margin-top: 4px;
+}
+.price-card-note {
+  font-family: var(--sans);
+  font-size: 13px;
+  color: var(--muted);
+  margin-bottom: 24px;
+  line-height: 1.6;
+}
+
+/* Race event card */
+.race-event {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  margin-top: 60px;
+  max-width: 1100px;
+  margin-left: auto;
+  margin-right: auto;
+}
+.race-event-img {
+  width: 300px;
+  height: 200px;
+  border-radius: 16px;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+.race-event-img img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.race-event-info {
+  flex: 1;
+}
+.race-event-badge {
+  display: inline-block;
+  font-family: var(--sans);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 1px;
+  color: var(--orange);
+  background: rgba(217,123,42,0.1);
+  padding: 4px 12px;
+  border-radius: 4px;
+  margin-bottom: 12px;
+}
+.race-event-title {
+  font-family: var(--sans);
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 8px;
+}
+.race-event-desc {
+  font-family: var(--sans);
+  font-size: 14px;
+  color: var(--muted);
+  line-height: 1.6;
+}
+
+/* ============ CTA SECTION ============ */
+.cta {
+  position: relative;
+  width: 100%;
+  min-height: 600px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background: url('/sucai/race4.jpg') center/cover no-repeat;
+  color: #fff;
+  overflow: hidden;
+}
+.cta::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    180deg,
+    rgba(10,10,10,0.65) 0%,
+    rgba(10,10,10,0.8) 100%
+  );
+  z-index: 1;
+}
+.cta > * { position: relative; z-index: 2; }
+
+.cta-brand {
+  font-family: var(--sans);
+  font-size: 13px;
+  font-weight: 400;
+  letter-spacing: 2px;
+  color: rgba(255,255,255,0.5);
+  margin-bottom: 32px;
+  text-align: center;
+}
+.cta-title {
+  font-family: var(--sans);
+  font-size: 38px;
+  font-weight: 900;
+  text-align: center;
+  line-height: 1.5;
+  margin-bottom: 40px;
+}
+.cta-title .hl { color: var(--orange); }
+
+/* Countdown */
+.countdown-wrap {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 40px;
+}
+.countdown-block {
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.15);
+  border-radius: 12px;
+  padding: 16px 24px;
+  text-align: center;
+  backdrop-filter: blur(4px);
+}
+.countdown-num {
+  font-family: var(--inter);
+  font-size: 36px;
+  font-weight: 700;
+  color: #fff;
+  line-height: 1;
+}
+.countdown-label {
+  font-family: var(--sans);
+  font-size: 12px;
+  color: rgba(255,255,255,0.5);
+  margin-top: 6px;
+}
+
+/* CTA Price & Button */
+.cta-price {
+  font-family: var(--inter);
+  font-size: 42px;
+  font-weight: 800;
+  color: var(--orange);
+  margin-bottom: 24px;
+}
+.cta-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--orange);
+  color: #fff;
+  font-family: var(--sans);
+  font-size: 18px;
+  font-weight: 700;
+  padding: 18px 48px;
+  border-radius: 50px;
+  border: none;
+  cursor: pointer;
+  transition: background 0.3s, transform 0.3s, box-shadow 0.3s;
+  box-shadow: 0 8px 30px rgba(217,123,42,0.35);
+}
+.cta-btn:hover {
+  background: var(--orange-light);
+  transform: translateY(-2px);
+  box-shadow: 0 12px 40px rgba(217,123,42,0.45);
+}
+.cta-note {
+  font-family: var(--sans);
+  font-size: 13px;
+  color: rgba(255,255,255,0.4);
+  margin-top: 20px;
+  letter-spacing: 4px;
+}
+
+/* ============ FOOTER ============ */
+.footer {
+  background: var(--dark);
+  color: rgba(255,255,255,0.5);
+  padding: 48px 40px;
+}
+.footer-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 40px;
+  align-items: start;
+}
+.footer-col {
+  font-family: var(--sans);
+  font-size: 12px;
+  line-height: 1.8;
+  letter-spacing: 0.5px;
+}
+.footer-col strong {
+  display: block;
+  color: rgba(255,255,255,0.7);
+  font-weight: 600;
+  font-size: 13px;
+  margin-bottom: 4px;
+}
+.footer-center {
+  text-align: center;
+}
+
+/* ============ RESPONSIVE ============ */
+@media (max-width: 768px) {
+  .hero-title { font-size: 36px; }
+  .hero-subtitle { font-size: 22px; }
+  .hero-nav { padding: 16px 20px; }
+  .hero-nav span { font-size: 11px; }
+  .typewriter-wrap { font-size: 18px; }
+  .benefits-banner { height: 360px; }
+  .benefits-banner-title { font-size: 22px; }
+  .exp-grid { grid-template-columns: 1fr; }
+  .benefit-grid { grid-template-columns: 1fr; }
+  .benefit-card { padding: 24px; }
+  .section-title { font-size: 28px; }
+  .value-body { grid-template-columns: 1fr; }
+  .price-card { position: static; }
+  .value-banner-big { font-size: 36px; }
+  .race-event { flex-direction: column; }
+  .race-event-img { width: 100%; height: 180px; }
+  .cta-title { font-size: 26px; }
+  .countdown-wrap { gap: 8px; }
+  .countdown-block { padding: 12px 16px; }
+  .countdown-num { font-size: 28px; }
+  .cta-price { font-size: 32px; }
+  .footer-inner { grid-template-columns: 1fr; text-align: center; }
+  .footer-center { order: -1; }
+}
+</style>
+</head>
+<body>
+
+<!-- ==================== HERO ==================== -->
+<section class="hero" id="hero">
+  <nav class="hero-nav">
+    <span>莫干山户外运动协会 × 山野梦想家 × DEEPBEAT记路家</span>
+  </nav>
+  <div class="hero-content">
+    <div class="hero-tag">寻迹莫干山 · 2026年首期</div>
+    <h1 class="hero-title">寻迹莫干山<br><span class="orange">记路家计划</span></h1>
+    <div class="typewriter-wrap">
+      <span>寻找那个</span>
+      <span class="typewriter-text" id="typewriter"></span>
+      <span class="typewriter-cursor"></span>
+    </div>
+    <div class="hero-slogan">
+      寻找懂运动又专业的你<br>
+      玩出运动的正确生活方式
+    </div>
+    <div class="hero-date">首期 · 2026.7.3 — 7.5</div>
+    <br>
+    <a href="#benefits" class="hero-explore">
+      EXPLORE
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M12 5v14M5 12l7 7 7-7"/>
+      </svg>
+    </a>
+  </div>
+</section>
+
+<!-- ==================== BENEFITS ==================== -->
+<section class="benefits" id="benefits">
+  <!-- Banner -->
+  <div class="benefits-banner">
+    <img src="/sucai/race2.jpg" alt="莫干山越野赛事">
+    <div class="benefits-banner-content">
+      <div class="benefits-banner-title fade-up">
+        从零跑到领跑<br>
+        从达人到山野人<br>
+        从记路者到传承记录者
+      </div>
+      <div class="benefits-banner-desc fade-up stagger-2">
+        这不只是一次活动，是一套文化+身份+内容的完整配置包。
+      </div>
+    </div>
+  </div>
+
+  <div class="container">
+    <!-- Section title -->
+    <div style="text-align:center; margin: 60px 0 20px;" class="fade-up">
+      <div class="section-label">EXPERIENCES</div>
+      <h2 class="section-title">四大特色体验</h2>
+      <p class="section-desc" style="margin:0 auto;">沉浸式感受莫干山的运动与文化魅力</p>
+    </div>
+
+    <!-- Experience cards -->
+    <div class="exp-grid">
+      <div class="exp-card scale-in stagger-1">
+        <img src="/sucai/01.jpg" alt="郡安里度假酒店">
+        <div class="exp-card-label">入住莫干山 Joe Lalli 郡安里度假酒店</div>
+      </div>
+      <div class="exp-card scale-in stagger-2">
+        <img src="/sucai/02.jpg" alt="百年红土网球场">
+        <div class="exp-card-label">感受莫干山百年红土网球场</div>
+      </div>
+      <div class="exp-card scale-in stagger-3">
+        <img src="/sucai/03.jpg" alt="运动恢复设备">
+        <div class="exp-card-label">感受国际运动员同款运动恢复设备</div>
+      </div>
+      <div class="exp-card scale-in stagger-4">
+        <img src="/sucai/04.jpg" alt="超级赛事名额">
+        <div class="exp-card-label">优先抢购超级赛事名额</div>
+      </div>
+    </div>
+
+    <!-- Benefit cards -->
+    <div class="benefit-section-title fade-up">
+      <div class="section-label">BENEFITS</div>
+      <h2 class="section-title">十大专属权益</h2>
+    </div>
+
+    <div class="benefit-grid">
+      <!-- 01 -->
+      <div class="benefit-card fade-up stagger-1">
+        <div class="benefit-card-num">01</div>
+        <span class="benefit-card-tag">入营即获</span>
+        <h3 class="benefit-card-title">专属山野梦想家定制礼包</h3>
+        <ul class="benefit-card-list">
+          <li>定制山野梦想家装备包</li>
+          <li>专属记路家身份铭牌</li>
+          <li>寻迹莫干山纪念手册</li>
+        </ul>
+      </div>
+      <!-- 02 -->
+      <div class="benefit-card fade-up stagger-2">
+        <div class="benefit-card-num">02</div>
+        <span class="benefit-card-tag">官方认证</span>
+        <h3 class="benefit-card-title">48小时倒计时·山野落跑专属计划</h3>
+        <ul class="benefit-card-list">
+          <li>48小时沉浸式越野体验</li>
+          <li>官方认证赛道挑战</li>
+          <li>专业教练全程指导</li>
+        </ul>
+      </div>
+      <!-- 03 -->
+      <div class="benefit-card fade-up stagger-3">
+        <div class="benefit-card-num">03</div>
+        <span class="benefit-card-tag">文化溯源</span>
+        <h3 class="benefit-card-title">非遗传承人·深度山野文脉探索</h3>
+        <ul class="benefit-card-list">
+          <li>非遗传承人亲授山野文化</li>
+          <li>莫干山历史文脉深度探索</li>
+          <li>传统技艺体验工作坊</li>
+        </ul>
+      </div>
+      <!-- 04 -->
+      <div class="benefit-card fade-up stagger-4">
+        <div class="benefit-card-num">04</div>
+        <span class="benefit-card-tag">独家权益</span>
+        <h3 class="benefit-card-title">独家定制·莫干山专属运动路线设计</h3>
+        <ul class="benefit-card-list">
+          <li>专属定制运动路线规划</li>
+          <li>莫干山私藏打卡点解锁</li>
+          <li>路线记录与传承认证</li>
+        </ul>
+      </div>
+      <!-- 05 -->
+      <div class="benefit-card fade-up stagger-1">
+        <div class="benefit-card-num">05</div>
+        <span class="benefit-card-tag">科学恢复</span>
+        <h3 class="benefit-card-title">专业级运动恢复·理疗康复体系体验</h3>
+        <ul class="benefit-card-list">
+          <li>国际运动员同款恢复设备</li>
+          <li>专业理疗师一对一指导</li>
+          <li>赛后恢复方案定制</li>
+        </ul>
+      </div>
+      <!-- 06 -->
+      <div class="benefit-card fade-up stagger-2">
+        <div class="benefit-card-num">06</div>
+        <span class="benefit-card-tag">运动科学</span>
+        <h3 class="benefit-card-title">高山氧高阶心肺健康管理赛前增益</h3>
+        <ul class="benefit-card-list">
+          <li>高山负氧离子环境训练</li>
+          <li>心肺功能科学评估</li>
+          <li>赛前体能增益方案</li>
+        </ul>
+      </div>
+      <!-- 07 -->
+      <div class="benefit-card fade-up stagger-3">
+        <div class="benefit-card-num">07</div>
+        <span class="benefit-card-tag">官方赛事</span>
+        <h3 class="benefit-card-title">寻迹落日·逐光越野赛事专属名额</h3>
+        <ul class="benefit-card-list">
+          <li>官方越野赛事参赛名额</li>
+          <li>专属赛道与完赛证书</li>
+          <li>赛事全程影像记录</li>
+        </ul>
+      </div>
+      <!-- 08 -->
+      <div class="benefit-card fade-up stagger-4">
+        <div class="benefit-card-num">08</div>
+        <span class="benefit-card-tag">内容冷启动</span>
+        <h3 class="benefit-card-title">全流程视觉影像全程服务</h3>
+        <ul class="benefit-card-list">
+          <li>专业摄影团队全程跟拍</li>
+          <li>短视频/图文内容制作</li>
+          <li>社交媒体传播支持</li>
+        </ul>
+      </div>
+      <!-- 09 -->
+      <div class="benefit-card fade-up stagger-1">
+        <div class="benefit-card-num">09</div>
+        <span class="benefit-card-tag">身体闭环</span>
+        <h3 class="benefit-card-title">山野旅居礼遇·篝火跨界晚宴双重体验</h3>
+        <ul class="benefit-card-list">
+          <li>莫干山精品民宿入住</li>
+          <li>篝火跨界社交晚宴</li>
+          <li>山野美食与文化体验</li>
+        </ul>
+      </div>
+      <!-- 10 -->
+      <div class="benefit-card fade-up stagger-2">
+        <div class="benefit-card-num">10</div>
+        <span class="benefit-card-tag">永久身份</span>
+        <h3 class="benefit-card-title">终身莫干山文化传承者身份授予</h3>
+        <ul class="benefit-card-list">
+          <li>终身文化传承者认证</li>
+          <li>莫干山专属权益终身享有</li>
+          <li>传承者社群永久会员</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ==================== VALUE TABLE ==================== -->
+<section class="section" id="value" style="padding-top:0;">
+  <!-- Banner -->
+  <div class="value-banner">
+    <img src="/sucai/race1.jpg" alt="权益价值">
+    <div class="value-banner-content">
+      <div class="value-banner-big fade-up">
+        综合价值 <span class="orange">¥19,000+</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="container">
+    <div class="value-body">
+      <!-- Left: Table -->
+      <div class="fade-left">
+        <div class="section-label" style="margin-bottom:20px;">VALUE BREAKDOWN</div>
+        <table class="value-table">
+          <thead>
+            <tr><th>#</th><th>权益项目</th><th style="text-align:right;">价值</th></tr>
+          </thead>
+          <tbody>
+            <tr><td class="num-col">01</td><td>专属山野梦想家定制礼包</td><td style="text-align:right;" class="num-col">¥1,200</td></tr>
+            <tr><td class="num-col">02</td><td>48小时山野落跑专属计划</td><td style="text-align:right;" class="num-col">¥3,000</td></tr>
+            <tr><td class="num-col">03</td><td>非遗传承人·深度文脉探索</td><td style="text-align:right;" class="num-col">¥1,500</td></tr>
+            <tr><td class="num-col">04</td><td>独家定制运动路线设计</td><td style="text-align:right;" class="num-col">¥2,000</td></tr>
+            <tr><td class="num-col">05</td><td>专业级运动恢复体系体验</td><td style="text-align:right;" class="num-col">¥1,800</td></tr>
+            <tr><td class="num-col">06</td><td>高山氧心肺健康管理增益</td><td style="text-align:right;" class="num-col">¥1,500</td></tr>
+            <tr><td class="num-col">07</td><td>逐光越野赛事专属名额</td><td style="text-align:right;" class="num-col">¥2,500</td></tr>
+            <tr><td class="num-col">08</td><td>全流程视觉影像服务</td><td style="text-align:right;" class="num-col">¥2,000</td></tr>
+            <tr><td class="num-col">09</td><td>山野旅居礼遇·篝火晚宴</td><td style="text-align:right;" class="num-col">¥2,000</td></tr>
+            <tr><td class="num-col">10</td><td>终身文化传承者身份授予</td><td style="text-align:right;" class="num-col">¥1,500</td></tr>
+            <tr style="font-weight:700;"><td></td><td style="color:var(--text); font-weight:700;">综合价值合计</td><td style="text-align:right; color:var(--orange); font-weight:700; font-size:16px;">¥19,000+</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Right: Price card -->
+      <div class="fade-right">
+        <div class="price-card">
+          <div class="price-card-label">首期早鸟价</div>
+          <div class="price-card-price">¥5,980</div>
+          <div class="price-card-original">¥12,800</div>
+          <div class="price-card-stats">
+            <div class="price-stat">
+              <div class="price-stat-num">15</div>
+              <div class="price-stat-label">席位</div>
+            </div>
+            <div class="price-stat">
+              <div class="price-stat-num">3天2夜</div>
+              <div class="price-stat-label">行程</div>
+            </div>
+            <div class="price-stat">
+              <div class="price-stat-num">10</div>
+              <div class="price-stat-label">项权益</div>
+            </div>
+          </div>
+          <div class="price-card-note">
+            首期限定 · 满席即止<br>
+            包含住宿、餐饮、赛事、影像等全部服务
+          </div>
+          <a href="https://my.feishu.cn/share/base/form/shrcnqbR2ABIkzdEQHAKjSAwOib" target="_blank" rel="noopener" class="cta-btn" style="width:100%; justify-content:center; padding:16px 32px; font-size:16px;">
+            立即报名
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Race event -->
+    <div class="race-event fade-up">
+      <div class="race-event-img">
+        <img src="/sucai/race3.jpg" alt="落日逐光越野赛">
+      </div>
+      <div class="race-event-info">
+        <span class="race-event-badge">官方赛事</span>
+        <h3 class="race-event-title">寻迹 · 落日逐光 · 官方赛事</h3>
+        <p class="race-event-desc">
+          在莫干山的落日余晖中，开启一场专属记路者的逐光越野之旅。这不是普通的跑步赛事，而是一次文化与运动的深度融合体验。完赛者将获得官方认证的传承者证书与专属纪念。
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ==================== CTA ==================== -->
+<section class="cta" id="cta">
+  <div class="cta-brand fade-up">莫干山户外运动协会 × 山野梦想家 × DEEPBEAT记路家</div>
+  <h2 class="cta-title fade-up stagger-2">
+    <span class="hl">15个人</span> / <span class="hl">15条专属路线</span> / <span class="hl">15张传承者证书</span>
+  </h2>
+  <div class="countdown-wrap fade-up stagger-3" id="countdown">
+    <div class="countdown-block">
+      <div class="countdown-num" id="cd-hours">48</div>
+      <div class="countdown-label">时</div>
+    </div>
+    <div class="countdown-block">
+      <div class="countdown-num" id="cd-minutes">00</div>
+      <div class="countdown-label">分</div>
+    </div>
+    <div class="countdown-block">
+      <div class="countdown-num" id="cd-seconds">00</div>
+      <div class="countdown-label">秒</div>
+    </div>
+  </div>
+  <div class="cta-price fade-up stagger-4">¥5,980</div>
+  <a href="https://my.feishu.cn/share/base/form/shrcnqbR2ABIkzdEQHAKjSAwOib" target="_blank" rel="noopener" class="cta-btn fade-up stagger-5">
+    立即报名
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+  </a>
+  <div class="cta-note fade-up stagger-5">满席即止</div>
+</section>
+
+<!-- ==================== FOOTER ==================== -->
+<footer class="footer">
+  <div class="footer-inner">
+    <div class="footer-col">
+      <strong>Moganshan Road Explorer Project</strong>
+      © 2026 寻迹莫干山·记路家计划
+    </div>
+    <div class="footer-col footer-center">
+      <strong>健康中国·山野梦想家</strong>
+    </div>
+    <div class="footer-col" style="text-align:right;">
+      <strong>莫干山户外运动协会</strong>
+      山野梦想家×DEEPBEAT记路家<br>
+      浙江·德清·莫干山
+    </div>
+  </div>
+</footer>
+
+<!-- ==================== JAVASCRIPT ==================== -->
+<script>
+// ============ TYPEWRITER EFFECT ============
+(function() {
+  const words = ['记路家', '传承人', '山野人', '梦想家'];
+  const el = document.getElementById('typewriter');
+  let wordIdx = 0;
+  let charIdx = 0;
+  let isDeleting = false;
+  let speed = 150;
+
+  function type() {
+    const current = words[wordIdx];
+    if (isDeleting) {
+      el.textContent = current.substring(0, charIdx - 1);
+      charIdx--;
+      speed = 80;
+    } else {
+      el.textContent = current.substring(0, charIdx + 1);
+      charIdx++;
+      speed = 150;
+    }
+
+    if (!isDeleting && charIdx === current.length) {
+      speed = 2000; // pause at end
+      isDeleting = true;
+    } else if (isDeleting && charIdx === 0) {
+      isDeleting = false;
+      wordIdx = (wordIdx + 1) % words.length;
+      speed = 500; // pause before next word
+    }
+
+    setTimeout(type, speed);
+  }
+  type();
+})();
+
+// ============ 48H COUNTDOWN ============
+(function() {
+  // Start 48 hours from page load (or from a fixed date)
+  const startTime = Date.now();
+  const duration = 48 * 60 * 60 * 1000; // 48 hours in ms
+
+  function update() {
+    const elapsed = Date.now() - startTime;
+    let remaining = duration - elapsed;
+    if (remaining < 0) remaining = 0;
+
+    const hours = Math.floor(remaining / (1000 * 60 * 60));
+    const minutes = Math.floor((remaining % (1000 * 60 * 60)) / (1000 * 60));
+    const seconds = Math.floor((remaining % (1000 * 60)) / 1000);
+
+    document.getElementById('cd-hours').textContent = String(hours).padStart(2, '0');
+    document.getElementById('cd-minutes').textContent = String(minutes).padStart(2, '0');
+    document.getElementById('cd-seconds').textContent = String(seconds).padStart(2, '0');
+
+    if (remaining > 0) {
+      requestAnimationFrame(update);
+    }
+  }
+  update();
+})();
+
+// ============ SCROLL ANIMATIONS (IntersectionObserver) ============
+(function() {
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+      }
+    });
+  }, { threshold: 0.15, rootMargin: '0px 0px -40px 0px' });
+
+  document.querySelectorAll('.fade-up, .fade-left, .fade-right, .scale-in').forEach(el => {
+    observer.observe(el);
+  });
+})();
+
+// ============ SMOOTH SCROLL FOR EXPLORE BUTTON ============
+document.querySelector('.hero-explore')?.addEventListener('click', function(e) {
+  e.preventDefault();
+  const target = document.getElementById('benefits');
+  if (target) target.scrollIntoView({ behavior: 'smooth' });
+});
+</script>
+
+</body>
+</html>

@@ -42,8 +42,12 @@ async function startServer() {
   app.use(express.json({ limit: '2mb' }));
   app.use(express.urlencoded({ extended: true }));
 
-  // 静态文件
-  app.use(express.static(path.join(__dirname, 'public')));
+  // 静态文件（带缓存）
+  app.use(express.static(path.join(__dirname, 'public'), {
+    maxAge: '1d', // 静态资源缓存1天
+    etag: true,
+    lastModified: true
+  }));
   app.use('/uploads', express.static(uploadDir));
 
   // ============================================================
@@ -53,11 +57,25 @@ async function startServer() {
   const playerRoutes = require('./routes/player');
   const userRoutes = require('./routes/user');
   const adminRoutes = require('./routes/admin');
+  const inviteCodeRoutes = require('./routes/invite-codes');
+  const redeemCodeRoutes = require('./routes/redeem-code');
 
   app.use('/api/auth', authRoutes);
+  app.use('/api/auth', redeemCodeRoutes);
   app.use('/api/player', playerRoutes);
   app.use('/api/user', userRoutes);
   app.use('/api/admin', adminRoutes);
+  app.use('/api/admin/invite-codes', inviteCodeRoutes);
+
+  // 游戏系统路由
+  const gameRoutes = require('./routes/game');
+  const adminGameRoutes = require('./routes/admin-game');
+  app.use('/api/game', gameRoutes);
+  app.use('/api/admin/game', adminGameRoutes);
+
+  // 邀请码管理路由
+  const adminInvitationRoutes = require('./routes/admin-invitations');
+  app.use('/api/admin/invitations', adminInvitationRoutes);
 
   // ============================================================
   // SPA 兜底
@@ -73,6 +91,14 @@ async function startServer() {
   app.get('/invitation/view/:code', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'invitation.html'));
   });
+  // 游戏页 SPA 兜底
+  app.get('/game', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'game.html'));
+  });
+  app.get('/game/*', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'game.html'));
+  });
+
 
   app.get('*', (req, res) => {
     if (req.path.startsWith('/api')) {

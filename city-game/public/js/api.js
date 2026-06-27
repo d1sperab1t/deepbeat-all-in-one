@@ -114,3 +114,18 @@ const API = {
   put(path, body, type) { return this.request(path, { method: 'PUT', body }, type); },
   delete(path, type) { return this.request(path, { method: 'DELETE' }, type); },
 };
+
+// ============================================================
+// 游戏系统 API
+// ============================================================
+const GameAPI = {
+  getList:           ()                  => API.get('/game/list'),
+  getCharacters:     (gameId)            => API.get(`/game/${gameId}/characters`),
+  join:              (gameId, body)       => API.post(`/game/${gameId}/join`, body),
+  getState:          ()                  => API.get('/game/state'),
+  submitPasscode:    (code)              => API.post('/game/passcode', { code }),
+  getNotifications:  ()                  => API.get('/game/notifications'),
+  markRead:          (id)                => API.post(`/game/notifications/${id}/read`, {}),
+};
+
+// API(baseUrl: '/api') → GameAPI 路径自动加 /api 前缀，无需重复写

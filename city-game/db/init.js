@@ -121,8 +121,23 @@ async function initDatabase() {
   function exec(sql) {
     db.run(sql);
   }
+  /**
+   * 事务辅助方法
+   * sql.js 没有 .transaction()，手动用 BEGIN/COMMIT/ROLLBACK 包裹
+   */
+  function transaction(fn) {
+    db.run('BEGIN');
+    try {
+      const result = fn();
+      db.run('COMMIT');
+      return result;
+    } catch (e) {
+      db.run('ROLLBACK');
+      throw e;
+    }
+  }
 
-  return { db: { prepare, run: (sql, params) => db.run(sql, params), exec }, save, close };
+  return { db: { prepare, run: (sql, params) => db.run(sql, params), exec, transaction }, save, close };
 }
 
 module.exports = { initDatabase };

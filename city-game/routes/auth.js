@@ -16,31 +16,65 @@ const router = express.Router();
 
 // ============================================================
 // POST /api/auth/register
-// 【注册页面】用户注册
+// 【注册页面】用户注册（用户名 + 邀请码）
 // ============================================================
 router.post('/register', (req, res) => {
   const db = req.app.locals.db;
-  const { phone, password, nickname, email } = req.body;
+  const { username, password, nickname, invitationCode } = req.body;
 
-  if (!phone || !password) {
-    return res.status(400).json({ error: '手机号和密码不能为空' });
+  if (!username || !password) {
+    return res.status(400).json({ error: '用户名和密码不能为空' });
+  }
+  if (username.trim().length < 2) {
+    return res.status(400).json({ error: '用户名至少2个字符' });
   }
   if (password.length < 6) {
     return res.status(400).json({ error: '密码长度不能少于6位' });
   }
 
-  const existing = db.prepare('SELECT id FROM users WHERE phone = ?').get(phone);
+  // 检查用户名是否已存在
+  const existing = db.prepare('SELECT id FROM users WHERE username = ?').get(username.trim());
   if (existing) {
-    return res.status(409).json({ error: '该手机号已注册' });
+    return res.status(409).json({ error: '该用户名已被注册' });
+  }
+
+  // 验证邀请码（如果提供了）
+  let activityId = null;
+  let isPaidUser = false;
+  if (invitationCode && invitationCode.trim()) {
+    const code = db.prepare(
+      'SELECT * FROM invitation_codes WHERE code = ? AND used_by IS NULL'
+    ).get(invitationCode.trim().toUpperCase());
+    if (!code) {
+      return res.status(400).json({ error: '邀请码无效或已被使用' });
+    }
+    activityId = code.activity_id;
+    isPaidUser = true;
   }
 
   const hashed = bcrypt.hashSync(password, config.bcryptRounds);
   const result = db.prepare(
-    'INSERT INTO users (phone, password, nickname, email) VALUES (?, ?, ?, ?)'
-  ).run(phone, hashed, nickname || '', email || '');
+    'INSERT INTO users (username, password, nickname, is_paid_user) VALUES (?, ?, ?, ?)'
+  ).run(username.trim(), hashed, nickname || '', isPaidUser ? 1 : 0);
+
+  const userId = result.lastInsertRowid;
+
+  // 如果有邀请码，标记已使用并关联活动
+  if (invitationCode && invitationCode.trim()) {
+    const code = db.prepare(
+      'SELECT id FROM invitation_codes WHERE code = ?'
+    ).get(invitationCode.trim().toUpperCase());
+    if (code) {
+      db.prepare("UPDATE invitation_codes SET used_by = ?, used_at = datetime('now', 'localtime') WHERE id = ?").run(userId, code.id);
+    }
+    // 如果有活动ID，自动报名
+    if (activityId) {
+      db.prepare("INSERT OR IGNORE INTO registrations (user_id, activity_id, status) VALUES (?, ?, 'confirmed')").run(userId, activityId);
+    }
+  }
 
   const token = jwt.sign(
-    { id: result.lastInsertRowid, nickname: nickname || '', phone },
+    { id: userId, username: username.trim(), nickname: nickname || '' },
     config.jwtSecret,
     { expiresIn: config.jwtExpiresIn }
   );
@@ -48,33 +82,33 @@ router.post('/register', (req, res) => {
   res.status(201).json({
     message: '注册成功',
     token,
-    user: { id: result.lastInsertRowid, nickname: nickname || '', phone }
+    user: { id: userId, username: username.trim(), nickname: nickname || '' }
   });
 });
 
 // ============================================================
 // POST /api/auth/login
-// 【登录页面】用户登录
+// 【登录页面】用户登录（用户名）
 // ============================================================
 router.post('/login', (req, res) => {
   const db = req.app.locals.db;
-  const { phone, password } = req.body;
+  const { username, password } = req.body;
 
-  if (!phone || !password) {
-    return res.status(400).json({ error: '手机号和密码不能为空' });
+  if (!username || !password) {
+    return res.status(400).json({ error: '用户名和密码不能为空' });
   }
 
-  const user = db.prepare('SELECT * FROM users WHERE phone = ?').get(phone);
+  const user = db.prepare('SELECT * FROM users WHERE username = ?').get(username.trim());
   if (!user) {
-    return res.status(401).json({ error: '手机号或密码错误' });
+    return res.status(401).json({ error: '用户名或密码错误' });
   }
 
   if (!bcrypt.compareSync(password, user.password)) {
-    return res.status(401).json({ error: '手机号或密码错误' });
+    return res.status(401).json({ error: '用户名或密码错误' });
   }
 
   const token = jwt.sign(
-    { id: user.id, nickname: user.nickname, phone: user.phone },
+    { id: user.id, username: user.username, nickname: user.nickname },
     config.jwtSecret,
     { expiresIn: config.jwtExpiresIn }
   );
@@ -82,28 +116,28 @@ router.post('/login', (req, res) => {
   res.json({
     message: '登录成功',
     token,
-    user: { id: user.id, nickname: user.nickname, phone: user.phone }
+    user: { id: user.id, username: user.username, nickname: user.nickname }
   });
 });
 
 // ============================================================
 // POST /api/auth/reset-password
-// 【忘记密码页面】通过手机号重置密码
+// 【忘记密码页面】通过用户名重置密码
 // ============================================================
 router.post('/reset-password', (req, res) => {
   const db = req.app.locals.db;
-  const { phone, newPassword } = req.body;
+  const { username, newPassword } = req.body;
 
-  if (!phone || !newPassword) {
-    return res.status(400).json({ error: '手机号和新密码不能为空' });
+  if (!username || !newPassword) {
+    return res.status(400).json({ error: '用户名和新密码不能为空' });
   }
   if (newPassword.length < 6) {
-    return res.status(400).json({ error: '密码长度不能少于6位' });
+    return res.status(400).json({ error: '新密码至少6位' });
   }
 
-  const user = db.prepare('SELECT id FROM users WHERE phone = ?').get(phone);
+  const user = db.prepare('SELECT id FROM users WHERE username = ?').get(username.trim());
   if (!user) {
-    return res.status(404).json({ error: '该手机号未注册' });
+    return res.status(404).json({ error: '该用户名未注册' });
   }
 
   const hashed = bcrypt.hashSync(newPassword, config.bcryptRounds);

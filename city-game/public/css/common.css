@@ -4,7 +4,7 @@
  * ============================================================ */
 
 /* ---------- Google Fonts ---------- */
-@import url('https://fonts.googleapis.com/css2?family=Anton&family=Space+Grotesk:wght@400;500;600;700&family=Space+Mono:wght@400;700&family=Noto+Sans+SC:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Anton&family=Space+Grotesk:wght@400;500;600;700&family=Space+Mono:wght@400;700&family=Noto+Sans+SC:wght@400;500;600;700&family=Allura&display=swap');
 
 /* ---------- CSS 变量（DEEPBEAT 设计系统） ---------- */
 :root {
@@ -19,7 +19,7 @@
   --info: #74B9FF;
 
   /* 背景色 */
-  --bg: #0B0A09;
+  --bg: #0D0C0B;
   --bg-white: #100E0C;
   --bg-hover: #0D0C0B;
   --bg-elevated: #1A1714;

@@ -16,35 +16,8 @@
  */
 
 // ============================================================
-// 工具函数
+// 工具函数（escapeHtml, showToast 来自 utils.js）
 // ============================================================
-
-/**
- * HTML 转义，防止 XSS
- */
-function escapeHtml(str) {
-  if (!str) return '';
-  return String(str)
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#39;');
-}
-
-function showToast(message, type = 'info') {
-  let container = document.querySelector('.toast-container');
-  if (!container) {
-    container = document.createElement('div');
-    container.className = 'toast-container';
-    document.body.appendChild(container);
-  }
-  const toast = document.createElement('div');
-  toast.className = `toast toast-${type}`;
-  toast.textContent = message;
-  container.appendChild(toast);
-  setTimeout(() => toast.remove(), 3000);
-}
 
 function requireAdmin() {
   if (!API.getToken('admin')) {
@@ -73,6 +46,16 @@ function renderSidebar(activePage) {
         <a class="sidebar-link ${activePage === 'tasks' ? 'active' : ''}" href="#/admin/tasks">🎯 任务配置</a>
         <a class="sidebar-link ${activePage === 'brands' ? 'active' : ''}" href="#/admin/brands">🤝 品牌管理</a>
         <a class="sidebar-link ${activePage === 'settings' ? 'active' : ''}" href="#/admin/settings">⚙️ 系统设置</a>
+        <a class="sidebar-link ${activePage === 'invite-codes' ? 'active' : ''}" href="#/admin/invite-codes">🎟️ 邀请码管理</a>
+        <div style="margin:16px 20px 8px;border-top:1px solid var(--border)"></div>
+        <div style="padding:8px 20px;font-size:11px;font-weight:600;color:var(--text-dim);text-transform:uppercase;letter-spacing:0.08em">游戏系统</div>
+        <a class="sidebar-link ${activePage === 'game-dashboard' ? 'active' : ''}" href="#/admin/game/dashboard">🎮 游戏监控</a>
+        <a class="sidebar-link ${activePage === 'game-games' ? 'active' : ''}" href="#/admin/game/games">📁 场次管理</a>
+        <a class="sidebar-link ${activePage === 'game-characters' ? 'active' : ''}" href="#/admin/game/characters">🎭 角色管理</a>
+        <a class="sidebar-link ${activePage === 'game-stages' ? 'active' : ''}" href="#/admin/game/stages">📋 阶段管理</a>
+        <a class="sidebar-link ${activePage === 'game-scripts' ? 'active' : ''}" href="#/admin/game/scripts">📖 剧本配置</a>
+        <a class="sidebar-link ${activePage === 'game-passcodes' ? 'active' : ''}" href="#/admin/game/passcodes">🔑 通关码</a>
+        <a class="sidebar-link ${activePage === 'game-players' ? 'active' : ''}" href="#/admin/game/players">👥 玩家进度</a>
       </nav>
       <div class="sidebar-footer">
         <span style="color:rgba(255,255,255,0.5);font-size:13px">👤 ${admin?.username || 'admin'}</span>
@@ -864,7 +847,7 @@ function previewInvitation() {
 
   // 打开预览窗口
   const previewWin = window.open('', '_blank', 'width=520,height=700');
-  previewWin.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>邀请函预览</title><style>body{margin:0;padding:24px;background:#0B0A09;display:flex;justify-content:center}</style></head><body></body></html>`);
+  previewWin.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>邀请函预览</title><style>body{margin:0;padding:24px;background:#0D0C0B;display:flex;justify-content:center}</style></head><body></body></html>`);
 
   // 加载 invitation.html 的样式，然后填充预览数据
   const link = previewWin.document.createElement('link');
@@ -882,11 +865,11 @@ function renderPreviewInWindow(win, inv) {
     <link href="https://fonts.googleapis.com/css2?family=Anton&family=Space+Grotesk:wght@400;500;600;700&family=Noto+Sans+SC:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
       *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
-      :root { --primary:#FF3D14; --gold:#FFD24A; --bg:#0B0A09; --card:#100E0C; --text:#F6F1E9; --text-light:#B8AEA4; --text-muted:#8A8178; --border:rgba(255,255,255,0.08); --font-display:"Anton","Noto Sans SC",sans-serif; --font-body:"Space Grotesk","Noto Sans SC",sans-serif; }
+      :root { --primary:#FF3D14; --gold:#FFD24A; --bg:#0D0C0B; --card:#100E0C; --text:#F6F1E9; --text-light:#B8AEA4; --text-muted:#8A8178; --border:rgba(255,255,255,0.08); --font-display:"Anton","Noto Sans SC",sans-serif; --font-body:"Space Grotesk","Noto Sans SC",sans-serif; }
       body { background:var(--bg); color:var(--text); font-family:var(--font-body); min-height:100vh; display:flex; align-items:center; justify-content:center; padding:24px; -webkit-font-smoothing:antialiased; }
       .invitation { width:100%; max-width:480px; }
       .inv-card { background:var(--card); border:1px solid var(--border); border-radius:18px; overflow:hidden; position:relative; }
-      .tpl-golden .inv-card { background:linear-gradient(165deg,#1A1714,#0B0A09); border-color:rgba(255,210,74,0.15); }
+      .tpl-golden .inv-card { background:linear-gradient(165deg,#1A1714,#0D0C0B); border-color:rgba(255,210,74,0.15); }
       .tpl-minimal .inv-card { border-radius:4px; }
       .inv-glow { position:absolute; top:-40%; left:50%; transform:translateX(-50%); width:300px; height:300px; background:radial-gradient(circle,rgba(255,61,20,0.12) 0%,transparent 70%); pointer-events:none; }
       .tpl-golden .inv-glow { background:radial-gradient(circle,rgba(255,210,74,0.08) 0%,transparent 70%); }
@@ -1353,6 +1336,8 @@ async function renderSettingsAdmin() {
 // ============================================================
 const router = new Router();
 
+// 空 hash 重定向到登录页
+router.add('#/', () => { window.location.hash = '#/admin/login'; });
 router.add('#/admin', () => { window.location.hash = '#/admin/login'; });
 router.add('#/admin/login', renderAdminLogin);
 router.add('#/admin/dashboard', renderDashboard);
@@ -1372,4 +1357,7 @@ router.beforeEach = (path) => {
   return true;
 };
 
-router.start();
+// 延迟启动路由，确保所有脚本（admin-game.js、admin-invite-codes.js）都已加载并注册路由
+window.addEventListener('load', () => {
+  router.start();
+});

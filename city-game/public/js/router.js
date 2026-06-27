@@ -70,8 +70,8 @@ class Router {
       }
     }
 
-    // 404 — 兼容用户端(#app)和管理端(#admin-app)
-    const app = document.getElementById('app') || document.getElementById('admin-app');
+    // 404 — 兼容用户端(#app)、管理端(#admin-app)、游戏端(#game-app)
+    const app = document.getElementById('app') || document.getElementById('admin-app') || document.getElementById('game-app');
     if (app) {
       app.innerHTML = `
         <div class="page-404">

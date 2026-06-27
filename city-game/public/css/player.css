@@ -1,18 +1,43 @@
 /* ============================================================
  * 用户端样式 - player.css
- * 基于 DEEPBEAT 品牌手册：极深暖黑 + 橙红主色 + 运动科技感
+ * 基于 DEEPBEAT 品牌手册设计系统（深色主题）
  * ============================================================ */
 
 /* ---------- 导航栏 ---------- */
 .navbar {
-  background: rgba(11, 10, 9, 0.85);
+  background: rgba(11, 10, 9, 0.92);
   backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(14px);
-  border-bottom: 1px solid var(--border);
+  border-bottom: 1px solid var(--card-border);
   position: sticky;
   top: 0;
   z-index: 100;
+  transition: all 0.5s cubic-bezier(0.16, 0.84, 0.3, 1);
 }
+
+/* 药丸模式（滚动后触发） */
+.navbar.pill-mode {
+  background: rgba(11, 10, 9, 0.85);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  position: fixed;
+  top: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: auto;
+  max-width: 600px;
+  border-radius: 999px;
+  padding: 0 24px;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.4);
+}
+.navbar.pill-mode .navbar-inner {
+  height: 44px;
+}
+.navbar.pill-mode .navbar-brand {
+  font-size: 16px;
+}
+
 .navbar-inner {
   max-width: 1200px;
   margin: 0 auto;
@@ -21,6 +46,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
+  transition: height 0.5s cubic-bezier(0.16, 0.84, 0.3, 1);
 }
 .navbar-brand {
   font-family: var(--font-display);
@@ -28,6 +54,7 @@
   color: var(--primary);
   text-decoration: none;
   letter-spacing: 0.5px;
+  margin-right: 24px;
 }
 .navbar-brand:hover { text-decoration: none; opacity: 1; }
 .navbar-links {
@@ -38,11 +65,21 @@
 .navbar-links a {
   font-size: 14px;
   font-weight: 500;
-  color: var(--text-muted);
+  color: var(--text2);
   transition: var(--transition);
 }
 .navbar-links a:hover {
   color: var(--text);
+  text-decoration: none;
+}
+.nav-login-link {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--primary);
+  transition: var(--transition);
+}
+.nav-login-link:hover {
+  opacity: 0.8;
   text-decoration: none;
 }
 .navbar-user {
@@ -61,10 +98,39 @@
   color: #fff;
   font-size: 13px;
   font-weight: 600;
-  font-family: var(--font-body);
+  font-family: var(--font-display);
 }
 
 /* ---------- 英雄区 ---------- */
+.home-hero {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #000;
+  transform-origin: center top;
+  transition: transform 0.5s cubic-bezier(0.16, 0.84, 0.3, 1),
+              border-radius 0.5s cubic-bezier(0.16, 0.84, 0.3, 1),
+              margin 0.5s cubic-bezier(0.16, 0.84, 0.3, 1);
+}
+.home-hero-bg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: 0;
+}
+.home-hero-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background: linear-gradient(180deg, rgba(0,0,0,0.55) 0%, rgba(0,0,0,0.45) 50%, rgba(0,0,0,0.7) 100%);
+}
+
 .hero {
   background: var(--bg);
   position: relative;
@@ -143,7 +209,7 @@
   padding: 20px 26px;
 }
 .activity-card-body h3 {
-  font-family: var(--font-body);
+  font-family: var(--font-display);
   font-size: 18px;
   font-weight: 700;
   margin-bottom: 10px;
@@ -164,7 +230,7 @@
   justify-content: space-between;
 }
 .activity-price {
-  font-family: var(--font-body);
+  font-family: var(--font-display);
   font-size: 20px;
   font-weight: 700;
   color: var(--primary);
@@ -254,7 +320,7 @@
   margin-top: 24px;
 }
 .profile-stat-num {
-  font-family: var(--font-body);
+  font-family: var(--font-display);
   font-size: 28px;
   font-weight: 700;
   color: var(--text);
@@ -333,7 +399,7 @@
   font-weight: 600;
   color: var(--text-muted);
   font-size: 13px;
-  font-family: var(--font-body);
+  font-family: var(--font-display);
 }
 .invitation-footer {
   padding: 20px 32px 28px;
@@ -488,11 +554,410 @@
   position: relative;
 }
 
-/* ---------- 响应式 ---------- */
+/* ---------- 标题独立包裹 ---------- */
+.home-hero-title-wrap {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  transform: translateY(-50%);
+  text-align: center;
+  padding: 0 20px;
+  z-index: 10;
+  pointer-events: none;
+}
+.home-hero-title-wrap .home-hero-title {
+  font-family: var(--font-display);
+  font-size: clamp(72px, 14vw, 200px);
+  font-weight: 400;
+  line-height: 0.9;
+  letter-spacing: 0.04em;
+  color: #fff;
+  text-transform: uppercase;
+  margin: 0;
+}
+.home-hero-title-wrap .home-hero-line {
+  width: 80px;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, #fff, transparent);
+  margin: 24px auto;
+}
+.home-hero-title-wrap .home-hero-sub {
+  font-family: var(--font-display);
+  font-size: clamp(14px, 2vw, 20px);
+  font-weight: 300;
+  color: #fff;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  margin-top: 40px;
+}
+
+/* ---------- 品牌板块 ---------- */
+.brand-intro {
+  text-align: center;
+  font-size: 22px;
+  color: var(--text-light);
+  line-height: 1.8;
+  max-width: 700px;
+  margin: 0 auto 60px;
+  letter-spacing: 0.02em;
+}
+.brand-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+}
+.brand-category {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 28px;
+  transition: border-color 0.3s var(--ease-out-expo);
+}
+.brand-category:hover {
+  border-color: rgba(255, 61, 20, 0.2);
+}
+.brand-category-label {
+  font-family: var(--font-display);
+  font-size: 18px;
+  color: var(--text);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: 20px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.brand-category-num {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--primary);
+  font-weight: 700;
+}
+.brand-items {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.brand-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: var(--radius);
+  border: 1px solid transparent;
+  transition: all 0.3s var(--ease-out-expo);
+}
+.brand-item:hover {
+  border-color: var(--border);
+  background: rgba(255, 255, 255, 0.05);
+}
+.brand-item-name {
+  font-family: var(--font-body);
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--text);
+  letter-spacing: 0.02em;
+}
+.brand-item-tag {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--text-muted);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  flex-shrink: 0;
+}
+.elite-script {
+  font-family: 'Allura', cursive;
+  font-size: 18px;
+  font-weight: 400;
+  color: var(--gold);
+  font-style: normal;
+}
+
+/* ---------- 战略合作机构 - 独立突出展示 ---------- */
+.institution-section {
+  margin-top: 24px;
+  text-align: center;
+  padding: 40px 0 20px;
+}
+.institution-divider {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin-bottom: 32px;
+}
+.institution-divider-line {
+  display: block;
+  width: 60px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--primary), transparent);
+}
+.institution-divider-dot {
+  display: block;
+  width: 6px;
+  height: 6px;
+  background: var(--primary);
+  border-radius: 50%;
+  box-shadow: 0 0 12px var(--primary);
+}
+.institution-label {
+  font-family: var(--font-display);
+  font-size: 28px;
+  color: var(--primary);
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  margin-bottom: 20px;
+  text-shadow: 0 0 40px rgba(255, 61, 20, 0.3);
+}
+.institution-num {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--primary);
+  font-weight: 700;
+  margin-right: 10px;
+}
+.institution-items {
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+.institution-item {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px 64px;
+  position: relative;
+}
+.institution-item::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(255, 61, 20, 0.08), rgba(255, 210, 74, 0.04));
+  border-radius: var(--radius-lg);
+  border: 1px solid rgba(255, 61, 20, 0.15);
+  pointer-events: none;
+}
+.institution-name {
+  font-family: var(--font-body);
+  font-size: 22px;
+  font-weight: 600;
+  color: var(--text);
+  letter-spacing: 0.04em;
+  position: relative;
+  z-index: 1;
+}
+.institution-subtitle {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--text-muted);
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  margin-top: 4px;
+  margin-bottom: 28px;
+}
+
+/* ---------- 长期合作品牌 ---------- */
+.longterm-section {
+  margin-top: 48px;
+  text-align: center;
+}
+.longterm-label {
+  font-family: var(--font-display);
+  font-size: 28px;
+  color: var(--primary);
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  margin-bottom: 20px;
+  text-shadow: 0 0 40px rgba(255, 61, 20, 0.3);
+}
+.longterm-brands {
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+.longterm-brand {
+  font-family: var(--font-body);
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--text);
+  letter-spacing: 0.02em;
+  padding: 12px 24px;
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: var(--radius);
+  border: 1px solid transparent;
+  transition: all 0.3s var(--ease-out-expo);
+}
+.longterm-brand:hover {
+  border-color: var(--border);
+  background: rgba(255, 255, 255, 0.05);
+}
+
 @media (max-width: 768px) {
+  /* 导航栏移动端适配 */
+  .navbar.pill-mode {
+    width: calc(100% - 32px);
+    max-width: none;
+    padding: 0 16px;
+  }
+  .navbar.pill-mode .navbar-inner {
+    height: 48px;
+  }
+  .navbar-links {
+    gap: 16px;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+  }
+  .navbar-links a {
+    font-size: 13px;
+    white-space: nowrap;
+  }
+  .nav-login-link {
+    font-size: 13px;
+  }
+  .brand-grid {
+    grid-template-columns: 1fr;
+  }
+  .institution-item {
+    min-width: 100%;
+  }
+  .brand-intro {
+    font-size: 18px;
+  }
   .hero { padding: 60px 16px; }
   .hero h1 { font-size: 40px; }
   .activity-grid { grid-template-columns: 1fr; }
   .profile-stats { gap: 28px; }
   .stamps-grid { grid-template-columns: repeat(3, 1fr); }
+}
+
+/* ---------- Modal 全屏高度（SPA 内） ---------- */
+.modal-overlay.open {
+  display: flex;
+  align-items: stretch;
+}
+
+/* Modal 适合/不适合 双栏卡片 */
+.modal-for-not{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:32px}
+.modal-for-card{background:rgba(0,200,83,0.06);border:1px solid rgba(0,200,83,0.2);border-radius:var(--radius-lg);padding:24px}
+.modal-not-card{background:rgba(255,255,255,0.03);border:1px solid var(--border);border-radius:var(--radius-lg);padding:24px}
+.modal-for-title{font-size:15px;font-weight:700;color:var(--success);margin-bottom:16px;letter-spacing:.02em}
+.modal-not-title{font-size:15px;font-weight:700;color:var(--text-muted);margin-bottom:16px;letter-spacing:.02em}
+.modal-for-item,.modal-not-item{font-size:14px;line-height:1.6;padding:6px 0;color:var(--text-light)}
+
+/* Modal Tabs */
+.modal-tabs{display:flex;gap:0;border-bottom:1px solid var(--border);margin-bottom:24px}
+.modal-tab{background:transparent;border:none;cursor:pointer;font-family:var(--font-body);font-size:14px;font-weight:600;padding:12px 4px;margin-right:24px;color:var(--text-muted);border-bottom:2px solid transparent;transition:all .2s}
+.modal-tab:hover{color:var(--text)}
+.modal-tab.active{color:var(--text);border-bottom-color:var(--primary)}
+
+/* Modal Knowledge Accordion */
+.modal-knowledge-intro{font-size:13px;color:var(--text-muted);margin-bottom:16px}
+.modal-knowledge-item{background:rgba(255,255,255,0.03);border:1px solid var(--border);border-radius:var(--radius-lg);padding:18px 20px;margin-bottom:10px;cursor:pointer;transition:border-color .2s}
+.modal-knowledge-item:hover{border-color:rgba(255,61,20,0.2)}
+.modal-knowledge-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
+.modal-knowledge-cat{font-size:12px;font-weight:600;color:var(--primary)}
+.modal-knowledge-dot{font-size:12px;color:var(--text-dim)}
+.modal-knowledge-read{font-size:12px;color:var(--text-dim)}
+.modal-knowledge-icon{font-size:18px;color:var(--text-muted);width:24px;text-align:center;transition:transform .2s}
+.modal-knowledge-title{font-size:15px;font-weight:700;color:var(--text)}
+.modal-knowledge-body{display:none;font-size:14px;color:var(--text-light);line-height:1.8;margin-top:14px;padding-top:14px;border-top:1px solid var(--border)}
+.modal {
+  width: 90%;
+  max-width: 600px;
+  max-height: 100vh;
+  height: 100vh;
+  border-radius: 0;
+  margin: 0 auto;
+  overflow-y: auto;
+}
+.modal-body {
+  padding: 32px;
+}
+
+/* Modal 全屏覆盖 common.css */
+.modal-overlay.open {
+  display: flex !important;
+  align-items: stretch !important;
+}
+.modal.open {
+  width: 90% !important;
+  max-width: 600px !important;
+  max-height: 100vh !important;
+  height: 100vh !important;
+  border-radius: 0 !important;
+  margin: 0 auto !important;
+  overflow-y: auto !important;
+}
+.modal-body {
+  padding: 32px !important;
+}
+
+/* Modal 品牌色适配（SPA 内） */
+.modal.open {
+  background: var(--bg);
+  border: 1px solid var(--card-border);
+}
+.modal-label {
+  color: var(--primary) !important;
+}
+.modal-title {
+  color: var(--text) !important;
+}
+.modal-subtitle {
+  color: var(--text2) !important;
+}
+.modal-desc {
+  color: var(--text3) !important;
+}
+.modal-section h3 {
+  color: var(--text) !important;
+}
+.modal-tl-label {
+  color: var(--primary) !important;
+}
+.modal-tl-desc {
+  color: var(--text3) !important;
+}
+.modal-include-item {
+  background: rgba(255, 255, 255, 0.07);
+  color: var(--text3);
+}
+.modal-include-item::before {
+  color: var(--primary);
+}
+.modal-result-num {
+  color: var(--primary) !important;
+}
+.modal-result-label {
+  color: var(--text3) !important;
+}
+.modal-review {
+  background: rgba(255, 255, 255, 0.07);
+  border-left-color: var(--primary);
+}
+.modal-review p {
+  color: var(--text2);
+}
+.modal-review cite {
+  color: var(--text3);
+}
+.modal-timeline::before {
+  background: rgba(255, 61, 20, 0.2);
+}
+.modal-tl-item::before {
+  border-color: var(--primary);
+  background: var(--bg);
+}
+.modal-close button {
+  color: var(--text2);
+}
+.modal-close button:hover {
+  color: var(--text);
 }
