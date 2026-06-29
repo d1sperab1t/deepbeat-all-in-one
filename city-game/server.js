@@ -11,6 +11,7 @@
 
 const express = require('express');
 const cors = require('cors');
+const rateLimit = require('express-rate-limit');
 const path = require('path');
 const fs = require('fs');
 const config = require('./config');
@@ -38,7 +39,20 @@ async function startServer() {
   app.locals.dbSave = save;
 
   // 中间件
-  app.use(cors());
+  const allowedOrigins = process.env.ALLOWED_ORIGINS
+    ? process.env.ALLOWED_ORIGINS.split(',').map(o => o.trim())
+    : ['http://localhost:3000'];
+  app.use(cors({ origin: allowedOrigins, credentials: true }));
+
+  // 认证接口速率限制：每 IP 每 15 分钟最多 20 次
+  const authLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000,
+    max: 20,
+    standardHeaders: true,
+    legacyHeaders: false,
+    message: { error: '请求过于频繁，请 15 分钟后再试' },
+  });
+
   app.use(express.json({ limit: '2mb' }));
   app.use(express.urlencoded({ extended: true }));
 
@@ -60,8 +74,8 @@ async function startServer() {
   const inviteCodeRoutes = require('./routes/invite-codes');
   const redeemCodeRoutes = require('./routes/redeem-code');
 
-  app.use('/api/auth', authRoutes);
-  app.use('/api/auth', redeemCodeRoutes);
+  app.use('/api/auth', authLimiter, authRoutes);
+  app.use('/api/auth', authLimiter, redeemCodeRoutes);
   app.use('/api/player', playerRoutes);
   app.use('/api/user', userRoutes);
   app.use('/api/admin', adminRoutes);
@@ -73,9 +87,7 @@ async function startServer() {
   app.use('/api/game', gameRoutes);
   app.use('/api/admin/game', adminGameRoutes);
 
-  // 邀请码管理路由
-  const adminInvitationRoutes = require('./routes/admin-invitations');
-  app.use('/api/admin/invitations', adminInvitationRoutes);
+  // 注意：旧版 admin-invitations 路由已弃用，统一使用 /api/admin/invite-codes
 
   // ============================================================
   // SPA 兜底

@@ -7,6 +7,7 @@
  */
 
 const express = require('express');
+const bcrypt = require('bcryptjs');
 const { authenticate, gameAuthenticate } = require('../middleware/auth');
 
 const router = express.Router();
@@ -78,7 +79,7 @@ router.post('/:gameId/join', authenticate, (req, res) => {
   }
 
   const character = db.prepare('SELECT * FROM characters WHERE game_id = ? AND code = ?').get(gameId, characterCode.trim());
-  if (!character || character.password !== characterPassword) {
+  if (!character || !bcrypt.compareSync(characterPassword.trim(), character.password)) {
     return res.status(401).json({ error: '角色编号或密码错误' });
   }
 

@@ -7,6 +7,8 @@
  */
 
 const express = require('express');
+const bcrypt = require('bcryptjs');
+const config = require('../config');
 const { authenticateAdmin } = require('../middleware/auth');
 
 const router = express.Router();
@@ -130,14 +132,16 @@ router.post('/characters', (req, res) => {
   }
 
   try {
-    const result = db.prepare('INSERT INTO characters (game_id, name, code, password, avatar_char, sort_order) VALUES (?, ?, ?, ?, ?, ?)').run(parseInt(gameId), name.trim(), code.trim(), password, avatarChar, sortOrder);
+    const hashedPassword = bcrypt.hashSync(password, config.bcryptRounds);
+    const result = db.prepare('INSERT INTO characters (game_id, name, code, password, avatar_char, sort_order) VALUES (?, ?, ?, ?, ?, ?)').run(parseInt(gameId), name.trim(), code.trim(), hashedPassword, avatarChar, sortOrder);
     req.app.locals.dbSave();
     res.status(201).json({ id: result.lastInsertRowid, message: '角色创建成功' });
   } catch (e) {
     if (e.message && e.message.includes('UNIQUE')) {
       return res.status(409).json({ error: '该游戏中已存在相同编号的角色' });
     }
-    throw e;
+    console.error('[admin-game/characters POST error]', e);
+    return res.status(500).json({ error: '创建失败，请重试' });
   }
 });
 
@@ -156,7 +160,7 @@ router.put('/characters/:id', (req, res) => {
   const values = [];
   if (name !== undefined) { fields.push('name = ?'); values.push(name.trim()); }
   if (code !== undefined) { fields.push('code = ?'); values.push(code.trim()); }
-  if (password !== undefined) { fields.push('password = ?'); values.push(password); }
+  if (password !== undefined) { fields.push('password = ?'); values.push(bcrypt.hashSync(password, config.bcryptRounds)); }
   if (avatarChar !== undefined) { fields.push('avatar_char = ?'); values.push(avatarChar); }
   if (sortOrder !== undefined) { fields.push('sort_order = ?'); values.push(sortOrder); }
 
@@ -364,7 +368,8 @@ router.post('/passcodes', (req, res) => {
     if (e.message && e.message.includes('UNIQUE')) {
       return res.status(409).json({ error: '该游戏中已存在相同通关码' });
     }
-    throw e;
+    console.error('[admin-game/passcodes POST error]', e);
+    return res.status(500).json({ error: '创建失败，请重试' });
   }
 });
 

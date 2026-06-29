@@ -2,6 +2,13 @@
  * 全局配置
  * 所有可调参数集中管理，部署时只需改这一个文件
  */
+
+// 生产环境强制要求 JWT 密钥来自环境变量，防止使用默认值上线
+if (process.env.NODE_ENV === 'production') {
+  if (!process.env.JWT_SECRET) throw new Error('生产环境必须设置 JWT_SECRET 环境变量');
+  if (!process.env.ADMIN_JWT_SECRET) throw new Error('生产环境必须设置 ADMIN_JWT_SECRET 环境变量');
+}
+
 module.exports = {
   // 服务器
   port: process.env.PORT || 3000,

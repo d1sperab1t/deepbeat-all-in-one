@@ -122,22 +122,26 @@ router.post('/login', (req, res) => {
 
 // ============================================================
 // POST /api/auth/reset-password
-// 【忘记密码页面】通过用户名重置密码
+// 【忘记密码页面】通过用户名 + 手机号验证身份后重置密码
 // ============================================================
 router.post('/reset-password', (req, res) => {
   const db = req.app.locals.db;
-  const { username, newPassword } = req.body;
+  const { username, phone, newPassword } = req.body;
 
-  if (!username || !newPassword) {
-    return res.status(400).json({ error: '用户名和新密码不能为空' });
+  if (!username || !phone || !newPassword) {
+    return res.status(400).json({ error: '用户名、手机号和新密码不能为空' });
   }
   if (newPassword.length < 6) {
     return res.status(400).json({ error: '新密码至少6位' });
   }
 
-  const user = db.prepare('SELECT id FROM users WHERE username = ?').get(username.trim());
-  if (!user) {
-    return res.status(404).json({ error: '该用户名未注册' });
+  const user = db.prepare('SELECT id, phone FROM users WHERE username = ?').get(username.trim());
+  // 统一返回同一错误信息，防止用户名枚举
+  if (!user || !user.phone) {
+    return res.status(400).json({ error: '验证失败，请联系管理员重置密码' });
+  }
+  if (user.phone !== phone.trim()) {
+    return res.status(400).json({ error: '验证失败，手机号不匹配' });
   }
 
   const hashed = bcrypt.hashSync(newPassword, config.bcryptRounds);

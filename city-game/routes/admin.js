@@ -193,10 +193,11 @@ router.get('/users', (req, res) => {
   const params = [];
 
   if (search) {
-    const where = ' WHERE nickname LIKE ? OR phone LIKE ? OR email LIKE ? OR real_name LIKE ?';
+    const where = ' WHERE nickname LIKE ? ESCAPE \'\\\' OR phone LIKE ? ESCAPE \'\\\' OR email LIKE ? ESCAPE \'\\\' OR real_name LIKE ? ESCAPE \'\\\'';
     countSql += where;
     sql += where;
-    const s = `%${search}%`;
+    const escaped = search.replace(/[\\%_]/g, c => '\\' + c);
+    const s = `%${escaped}%`;
     params.push(s, s, s, s);
   }
 
@@ -434,9 +435,20 @@ router.get('/settings', (req, res) => {
   res.json({ settings });
 });
 
+// 允许通过 API 修改的 settings 键白名单
+const ALLOWED_SETTINGS_KEYS = new Set([
+  'site_name', 'site_description', 'contact_phone', 'contact_email',
+  'icp_number', 'wechat_qrcode', 'announcement', 'registration_open',
+]);
+
 router.put('/settings', (req, res) => {
   const db = req.app.locals.db;
   const updates = req.body;
+
+  const invalidKeys = Object.keys(updates).filter(k => !ALLOWED_SETTINGS_KEYS.has(k));
+  if (invalidKeys.length > 0) {
+    return res.status(400).json({ error: `不允许修改的配置键: ${invalidKeys.join(', ')}` });
+  }
 
   for (const [k, v] of Object.entries(updates)) {
     db.prepare('INSERT OR REPLACE INTO settings (key, value) VALUES (?, ?)').run(k, v);

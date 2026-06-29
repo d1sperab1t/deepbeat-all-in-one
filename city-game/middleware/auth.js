@@ -58,21 +58,26 @@ function authenticateAdmin(req, res, next) {
  */
 function gameAuthenticate(req, res, next) {
   authenticate(req, res, () => {
-    const db = req.app.locals.db;
-    const char = db.prepare(`
-      SELECT uc.character_id, uc.game_id, c.name
-      FROM user_characters uc
-      JOIN characters c ON c.id = uc.character_id
-      JOIN games g ON g.id = uc.game_id
-      WHERE uc.user_id = ? AND g.status = 'active' LIMIT 1
-    `).get(req.user.id);
-    if (!char) {
-      return res.status(403).json({ error: '你尚未加入任何游戏，请先选择角色' });
+    try {
+      const db = req.app.locals.db;
+      const char = db.prepare(`
+        SELECT uc.character_id, uc.game_id, c.name
+        FROM user_characters uc
+        JOIN characters c ON c.id = uc.character_id
+        JOIN games g ON g.id = uc.game_id
+        WHERE uc.user_id = ? AND g.status = 'active' LIMIT 1
+      `).get(req.user.id);
+      if (!char) {
+        return res.status(403).json({ error: '你尚未加入任何游戏，请先选择角色' });
+      }
+      req.user.characterId = char.character_id;
+      req.user.gameId = char.game_id;
+      req.user.characterName = char.name;
+      next();
+    } catch (err) {
+      console.error('[gameAuthenticate error]', err);
+      return res.status(500).json({ error: '服务器内部错误，请稍后重试' });
     }
-    req.user.characterId = char.character_id;
-    req.user.gameId = char.game_id;
-    req.user.characterName = char.name;
-    next();
   });
 }
 
